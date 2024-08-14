@@ -63,6 +63,7 @@ blogRouter.post("/", async (c) => {
 
     return c.json({ id: blog.id });
   } catch (error) {
+    console.error(error);
     return c.json("error in server");
   }
 });
