@@ -27,15 +27,18 @@ export function Blogs() {
       <AppBar />
       <div className="flex justify-center ">
         <div>
-          {blogs.map((blog) => (
-            <BlogCard
-              id={blog.id}
-              authorName={blog.author?.name || "Anonymous"}
-              title={blog.title}
-              content={blog.content}
-              publishedDate="8th Aug 2024"
-            />
-          ))}
+          {blogs
+            .slice()
+            .reverse()
+            .map((blog) => (
+              <BlogCard
+                id={blog.id}
+                authorName={blog.author?.name}
+                title={blog.title}
+                content={blog.content}
+                publishedDate="8th Aug 2024"
+              />
+            ))}
         </div>
       </div>
     </div>
