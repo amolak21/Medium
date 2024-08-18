@@ -14,5 +14,3 @@ app.route("/api/v1/user", userRouter);
 app.route("/api/v1/blog", blogRouter);
 
 export default app;
-
-// postgresql://samolak67:UG2d6YjtmPpN@ep-falling-pine-a5vha30t.us-east-2.aws.neon.tech/neondb?sslmode=require

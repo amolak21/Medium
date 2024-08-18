@@ -1,8 +1,30 @@
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { Hono } from "hono";
+import { Context, Hono } from "hono";
 import { verify } from "hono/jwt";
 import { createBlogInput, updateBlogInput } from "@amolak/medium-common";
+
+const authMiddleware = async (c: Context, next: () => Promise<void>) => {
+  const authHeader = c.req.header("authorization") || "";
+
+  try {
+    const user = await verify(authHeader, c.env.JWT_SECRET);
+    if (user) {
+      c.set("userId", user.userId as string);
+      await next();
+    } else {
+      c.status(403);
+      return c.json({
+        msg: "You are not logged in,Please log in to continue",
+      });
+    }
+  } catch (error) {
+    c.status(403);
+    return c.json({
+      msg: "You are not logged in,Please log in to continue",
+    });
+  }
+};
 
 export const blogRouter = new Hono<{
   Bindings: {
@@ -14,30 +36,8 @@ export const blogRouter = new Hono<{
   };
 }>();
 
-blogRouter.use("/*", async (c, next) => {
-  const authHeader = c.req.header("authorization") || "";
-
-  try {
-    const user = await verify(authHeader, c.env.JWT_SECRET);
-    if (user) {
-      c.set("userId", user.userId as string);
-      await next();
-    } else {
-      c.status(403);
-      return c.json({
-        msg: "You are not logged in",
-      });
-    }
-  } catch (error) {
-    c.status(403);
-    return c.json({
-      msg: "You are not logged in",
-    });
-  }
-});
-
 //--------------------------------------------------BLOG-POST----------------------------------
-blogRouter.post("/", async (c) => {
+blogRouter.post("/", authMiddleware, async (c) => {
   const body = await c.req.json();
   const { success } = createBlogInput.safeParse(body);
 
@@ -68,7 +68,7 @@ blogRouter.post("/", async (c) => {
   }
 });
 //--------------------------------------------------BLOG-PUT----------------------------------
-blogRouter.put("/", async (c) => {
+blogRouter.put("/", authMiddleware, async (c) => {
   const body = await c.req.json();
   const { success } = updateBlogInput.safeParse(body);
 
@@ -103,8 +103,8 @@ blogRouter.get("/bulk", async (c) => {
 
   const blogs = await prisma.blog.findMany({
     select: {
-      content: true,
       title: true,
+      content: true,
       id: true,
       author: {
         select: {
