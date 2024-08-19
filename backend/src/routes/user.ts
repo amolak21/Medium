@@ -1,5 +1,5 @@
 import { signinInput, signupInput } from "@amolak/medium-common";
-import { PrismaClient } from "@prisma/client/edge";
+import { Prisma, PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { sign } from "hono/jwt";
@@ -41,11 +41,19 @@ userRouter.post("/signup", async (c) => {
       },
       c.env.JWT_SECRET
     );
+    // axios.isAxiosError(error)
 
     return c.text(jwt);
   } catch (e) {
-    c.status(411);
-    return c.text("Invalid");
+    const error = e as { code?: string };
+    if (error.code === "P2002") {
+      c.status(409);
+      return c.json({ msg: "Username already exists" });
+    }
+    c.status(500);
+    return c.json({
+      message: "Internal Server error",
+    });
   }
 });
 
