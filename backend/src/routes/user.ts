@@ -41,7 +41,6 @@ userRouter.post("/signup", async (c) => {
       },
       c.env.JWT_SECRET
     );
-    // axios.isAxiosError(error)
 
     return c.text(jwt);
   } catch (e) {
