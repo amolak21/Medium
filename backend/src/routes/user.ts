@@ -13,7 +13,6 @@ export const userRouter = new Hono<{
 
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
-
   const { success } = signupInput.safeParse(body);
 
   if (!success) {
@@ -80,11 +79,11 @@ userRouter.post("/signin", async (c) => {
     });
     if (!user) {
       c.status(403);
-      return c.text("Invalid username");
+      return c.text("invalid username");
     }
     const jwt = await sign(
       {
-        userId: user.id,
+        id: user.id,
       },
       c.env.JWT_SECRET
     );

@@ -10,7 +10,7 @@ const authMiddleware = async (c: Context, next: () => Promise<void>) => {
   try {
     const user = await verify(authHeader, c.env.JWT_SECRET);
     if (user) {
-      c.set("userId", user.userId as string);
+      c.set("userId", user.id as string);
       await next();
     } else {
       c.status(403);
@@ -36,7 +36,8 @@ export const blogRouter = new Hono<{
   };
 }>();
 
-//--------------------------------------------------BLOG-POST----------------------------------
+//------------------------------------BLOG-POST----------------------------------
+
 blogRouter.post("/", authMiddleware, async (c) => {
   const body = await c.req.json();
   const { success } = createBlogInput.safeParse(body);
@@ -49,6 +50,7 @@ blogRouter.post("/", authMiddleware, async (c) => {
   }
 
   const authorId = c.get("userId");
+
   const prisma = new PrismaClient({
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
