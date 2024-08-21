@@ -9,20 +9,20 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   name     String
-  username String  @unique
+  username String @unique
   password String
   blogs    Blog[]
 }
 
 model Blog {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   authorId  Int
   content   String
   thumbnail String?
-  published Boolean @default(false)
+  published Boolean  @default(false)
   title     String
   createdAt DateTime @default(now())
-  author    User    @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id])
 }
