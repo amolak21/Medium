@@ -60,11 +60,10 @@ blogRouter.post("/", authMiddleware, async (c) => {
         authorId: Number(authorId),
       },
     });
-
     return c.json({ id: blog.id });
   } catch (error) {
     console.error(error);
-    return c.json("error in server");
+    return c.json("error in server , or maybe login again");
   }
 });
 //--------------------------------------------------BLOG-PUT----------------------------------
@@ -106,6 +105,7 @@ blogRouter.get("/bulk", async (c) => {
       title: true,
       content: true,
       id: true,
+      createdAt: true,
       author: {
         select: {
           name: true,
@@ -135,6 +135,7 @@ blogRouter.get("/:id", async (c) => {
         id: true,
         title: true,
         content: true,
+        createdAt: true,
         author: {
           select: {
             name: true,
