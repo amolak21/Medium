@@ -1,5 +1,5 @@
 import { signinInput, signupInput } from "@amolak/medium-common";
-import { Prisma, PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { sign } from "hono/jwt";
