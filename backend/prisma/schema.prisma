@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "binary"
 }
 
@@ -7,20 +7,22 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id       Int @id @default(autoincrement())
-  name     String?
-  username String @unique
-  password String 
+  id       Int     @id @default(autoincrement())
+  name     String
+  username String  @unique
+  password String
   blogs    Blog[]
 }
 
-model Blog{
-  id        Int @id @default(autoincrement())
+model Blog {
+  id        Int     @id @default(autoincrement())
   authorId  Int
   content   String
   thumbnail String?
   published Boolean @default(false)
   title     String
-  author    User @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  author    User    @relation(fields: [authorId], references: [id])
 }
