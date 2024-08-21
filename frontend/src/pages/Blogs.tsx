@@ -22,6 +22,7 @@ export function Blogs() {
       </div>
     );
   }
+
   return (
     <div>
       <AppBar />
@@ -30,17 +31,37 @@ export function Blogs() {
           {blogs
             .slice()
             .reverse()
-            .map((blog) => (
+            .map((blog, i) => (
               <BlogCard
+                key={i}
                 id={blog.id}
                 authorName={blog.author?.name}
                 title={blog.title}
                 content={blog.content}
-                publishedDate="8th Aug 2024"
+                publishedDate={convertUTCtoIST(blog.createdAt)}
               />
             ))}
         </div>
       </div>
     </div>
   );
+}
+export function convertUTCtoIST(utcDate: string | Date): string {
+  const date = new Date(utcDate);
+
+  // Convert to IST using 'Asia/Kolkata' timezone
+  const options: Intl.DateTimeFormatOptions = {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  };
+
+  // Format the date to IST
+  const istDate = date.toLocaleString("en-IN", options);
+
+  return istDate;
 }
