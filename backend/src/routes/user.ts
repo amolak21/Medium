@@ -13,6 +13,7 @@ export const userRouter = new Hono<{
 
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
+
   const { success } = signupInput.safeParse(body);
 
   if (!success) {
@@ -27,7 +28,7 @@ userRouter.post("/signup", async (c) => {
   }).$extends(withAccelerate());
 
   try {
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         username: body.username,
         password: body.password,
@@ -37,7 +38,7 @@ userRouter.post("/signup", async (c) => {
 
     const jwt = await sign(
       {
-        id: body.id,
+        id: user.id,
       },
       c.env.JWT_SECRET
     );
