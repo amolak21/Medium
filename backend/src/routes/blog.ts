@@ -3,12 +3,14 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Context, Hono } from "hono";
 import { verify } from "hono/jwt";
 import { createBlogInput, updateBlogInput } from "@amolak/medium-common";
+import { getCookie } from "hono/cookie";
 
 const authMiddleware = async (c: Context, next: () => Promise<void>) => {
-  const authHeader = c.req.header("authorization") || "";
+  const authHeader = getCookie(c, "token") || "";
 
   try {
     const user = await verify(authHeader, c.env.JWT_SECRET);
+    console.log(user);
     if (user) {
       c.set("userId", user.id as string);
       await next();

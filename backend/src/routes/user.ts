@@ -2,6 +2,7 @@ import { signinInput, signupInput } from "@amolak/medium-common";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
+import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
 
 export const userRouter = new Hono<{
@@ -35,14 +36,15 @@ userRouter.post("/signup", async (c) => {
       },
     });
 
-    const jwt = await sign(
-      {
-        id: user.id,
-      },
-      c.env.JWT_SECRET
-    );
+    const payload = { id: user.id };
 
-    return c.text(jwt);
+    const jwt = await sign(payload, c.env.JWT_SECRET);
+    setCookie(c, "token", jwt, {
+      secure: true,
+      httpOnly: true,
+    });
+
+    return c.json({ msg: "You are Signed up " });
   } catch (e) {
     const error = e as { code?: string };
     if (error.code === "P2002") {
@@ -81,14 +83,14 @@ userRouter.post("/signin", async (c) => {
       c.status(403);
       return c.text("invalid username");
     }
-    const jwt = await sign(
-      {
-        id: user.id,
-      },
-      c.env.JWT_SECRET
-    );
+    const payload = { id: user.id };
 
-    return c.text(jwt);
+    const jwt = await sign(payload, c.env.JWT_SECRET);
+    setCookie(c, "token", jwt, {
+      secure: true,
+      httpOnly: true,
+    });
+    return c.json({ msg: "You are logged in " });
   } catch (e) {
     c.status(411);
     return c.text("Invalid Inputs");
