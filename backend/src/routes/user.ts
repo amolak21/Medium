@@ -9,9 +9,9 @@ export const userRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
+    FRONTEND_URL: string;
   };
 }>();
-
 userRouter.post("/signup", async (c) => {
   const body = await c.req.json();
   const { success } = signupInput.safeParse(body);
@@ -87,9 +87,10 @@ userRouter.post("/signin", async (c) => {
 
     const jwt = await sign(payload, c.env.JWT_SECRET);
     setCookie(c, "token", jwt, {
-      secure: true,
       httpOnly: true,
+      secure: true,
     });
+
     return c.json({ msg: "You are logged in " });
   } catch (e) {
     c.status(411);

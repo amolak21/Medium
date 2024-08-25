@@ -7,6 +7,7 @@ import { getCookie } from "hono/cookie";
 
 const authMiddleware = async (c: Context, next: () => Promise<void>) => {
   const authHeader = getCookie(c, "token") || "";
+  console.log(authHeader);
 
   try {
     const user = await verify(authHeader, c.env.JWT_SECRET);
@@ -14,16 +15,12 @@ const authMiddleware = async (c: Context, next: () => Promise<void>) => {
     if (user) {
       c.set("userId", user.id as string);
       await next();
-    } else {
-      c.status(403);
-      return c.json({
-        msg: "You are not logged in,Please log in to continue",
-      });
     }
   } catch (error) {
     c.status(403);
     return c.json({
       msg: "You are not logged in,Please log in to continue",
+      error,
     });
   }
 };
@@ -32,6 +29,7 @@ export const blogRouter = new Hono<{
   Bindings: {
     DATABASE_URL: string;
     JWT_SECRET: string;
+    FRONTEND_URL: string;
   };
   Variables: {
     userId: string;
