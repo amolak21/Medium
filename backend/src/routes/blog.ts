@@ -7,7 +7,10 @@ import { getCookie } from "hono/cookie";
 
 const authMiddleware = async (c: Context, next: () => Promise<void>) => {
   const authHeader = getCookie(c, "token") || "";
-  console.log(authHeader);
+  console.log(authHeader,"we are here");
+  if (!authHeader) {
+    console.error("You are not logged in,no cookie found");
+  }
 
   try {
     const user = await verify(authHeader, c.env.JWT_SECRET);

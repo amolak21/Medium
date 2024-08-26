@@ -42,6 +42,7 @@ userRouter.post("/signup", async (c) => {
     setCookie(c, "token", jwt, {
       secure: true,
       httpOnly: true,
+      sameSite: "None",
     });
 
     return c.json({ msg: "You are Signed up " });
@@ -89,6 +90,7 @@ userRouter.post("/signin", async (c) => {
     setCookie(c, "token", jwt, {
       httpOnly: true,
       secure: true,
+      sameSite: "None",
     });
 
     return c.json({ msg: "You are logged in " });
