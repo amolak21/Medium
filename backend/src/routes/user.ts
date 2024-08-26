@@ -38,11 +38,15 @@ userRouter.post("/signup", async (c) => {
 
     const payload = { id: user.id };
 
+    const expires = new Date();
+    expires.setMonth(expires.getMonth() + 1);
+
     const jwt = await sign(payload, c.env.JWT_SECRET);
     setCookie(c, "token", jwt, {
       secure: true,
       httpOnly: true,
       sameSite: "None",
+      expires: expires,
     });
 
     return c.json({ msg: "You are Signed up " });
@@ -85,11 +89,14 @@ userRouter.post("/signin", async (c) => {
       return c.text("invalid username");
     }
     const payload = { id: user.id };
+    const expires = new Date();
+    expires.setMonth(expires.getMonth() + 1);
 
     const jwt = await sign(payload, c.env.JWT_SECRET);
     setCookie(c, "token", jwt, {
       httpOnly: true,
       secure: true,
+      expires: expires,
       sameSite: "None",
     });
 
