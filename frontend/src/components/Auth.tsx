@@ -13,13 +13,20 @@ export function Auth({ type }: { type: "signup" | "signin" }) {
   });
 
   async function sendRequest() {
+    if (!postInputs.username || !postInputs.password) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/user/${type === "signup" ? "signup" : "signin"}`,
-        postInputs
+        postInputs,
+        {
+          withCredentials: true,
+        }
       );
-      const jwt = response.data;
-      localStorage.setItem("token", jwt);
+      alert(response?.data?.msg);
       navigate("/blogs");
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -28,7 +35,7 @@ export function Auth({ type }: { type: "signup" | "signin" }) {
         console.error(errorMsg);
         alert(errorMsg);
       } else {
-        console.error("An unexpected error occurred");
+        console.error("An unexpected error occurred", error);
       }
     }
   }

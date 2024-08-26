@@ -11,25 +11,23 @@ export const Publish = () => {
 
   async function handlePublish() {
     try {
+      console.log("hello");
       const response = await axios.post(
         `${BACKEND_URL}/api/v1/blog`,
         {
           title,
           content: description,
         },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
+        { withCredentials: true }
       );
+      console.log(response);
       navigate(`/blog/${response.data.id}`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const errorMsg = error.response?.data?.msg || "Some error has occurred";
-        console.error(errorMsg);
+        console.error(errorMsg, errorMsg.error);
         alert(errorMsg);
-        navigate("/signin");
+        // navigate("/signin");
       } else {
         console.error("An unexpected error occurred");
       }
