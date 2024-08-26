@@ -27,7 +27,7 @@ export const Publish = () => {
         const errorMsg = error.response?.data?.msg || "Some error has occurred";
         console.error(errorMsg, errorMsg.error);
         alert(errorMsg);
-        // navigate("/signin");
+        navigate("/signin");
       } else {
         console.error("An unexpected error occurred");
       }
