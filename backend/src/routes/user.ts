@@ -4,6 +4,7 @@ import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
+import { genSalt, hashPassword } from "../utils/authUtils";
 
 export const userRouter = new Hono<{
   Bindings: {
@@ -27,12 +28,15 @@ userRouter.post("/signup", async (c) => {
     datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate());
 
+  const salt = genSalt();
+  const hashedPassword = await hashPassword(body.password, salt);
   try {
     const user = await prisma.user.create({
       data: {
         username: body.username,
-        password: body.password,
+        password: hashedPassword,
         name: body.name,
+        salt,
       },
     });
 
@@ -66,7 +70,6 @@ userRouter.post("/signup", async (c) => {
 userRouter.post("/signin", async (c) => {
   const body = await c.req.json();
   const { success } = signinInput.safeParse(body);
-
   if (!success) {
     c.status(411);
     return c.json({
@@ -81,13 +84,24 @@ userRouter.post("/signin", async (c) => {
     const user = await prisma.user.findFirst({
       where: {
         username: body.username,
-        password: body.password,
       },
     });
+
     if (!user) {
       c.status(403);
-      return c.text("invalid username");
+      return c.text("invalid username ");
     }
+
+    const hashedInputPassword = await hashPassword(
+      body.password,
+      user.salt || ""
+    );
+
+    if (hashedInputPassword !== user.password) {
+      c.status(403);
+      return c.json({ message: "Invalid password" });
+    }
+
     const payload = { id: user.id };
     const expires = new Date();
     expires.setMonth(expires.getMonth() + 1);
