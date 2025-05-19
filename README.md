@@ -1,6 +1,6 @@
 # 📝 Medium Clone
 
-A full-stack **Medium.com clone** — a modern blogging platform built with a performant tech stack. Users can register, log in, write blog posts, read articles, and interact with content, just like Medium.
+A full-stack **Medium.com clone** — a modern blogging platform built with a performant tech stack. Users can register, log in, write blog posts, read articles and just like Medium.
 
 ## 🚀 Tech Stack
 
